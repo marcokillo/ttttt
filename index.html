@@ -1,17 +1,723 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
+
 <head>
-  <meta charset="UTF-8">
-  <title>پازل تصویری واقعی</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پادزهر سم ریجر — نسخه نهایی (3 صفحه)</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazir', 'Georgia', serif;
+            background: linear-gradient(135deg, #000000 0%, #2c1810 50%, #3c2f2f 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #d9d9d9;
+            overflow-x: hidden;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 920px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: #d2c6b8;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 6px;
+        }
+
+        /* صفحات (صفحه‌ها با class page) */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .card {
+            background: #2c1810;
+            border: 2px solid #3c2f2f;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            margin-bottom: 18px;
+            line-height: 1.6;
+            text-align: right;
+            color: #e6e6e6;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1.05rem;
+            border-radius: 8px;
+            border: 2px solid #3c2f2f;
+            background: #1a0f00;
+            color: #fff;
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.7);
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #3c2f2f 0%, #5c4a3a 100%);
+            color: #fff;
+            border: 2px solid #3c2f2f;
+            box-shadow: 0 6px 0 #2c1810;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            /* برای اطمینان از clickable area */
+            z-index: 1;
+            /* جلوگیری از تداخل */
+        }
+
+        .btn.block {
+            display: block;
+            width: 90%;
+            max-width: 320px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            /* افزایش padding برای clickable area بزرگ‌تر */
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: transparent;
+            border-radius: 10px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        #puzzleSubmit {
+            display: block;
+            width: 90%;
+            max-width: 320px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            /* برای اطمینان از کلیک روی تمام متن و padding */
+        }
+
+        .error-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #4a1c00, #6b2800);
+            color: #ffddcc;
+            padding: 14px 20px;
+            border-radius: 8px;
+            border: 2px solid #8b3a00;
+            z-index: 100000;
+            opacity: 0;
+            transition: .25s;
+        }
+
+        .error-message.show {
+            opacity: 1;
+            bottom: 45px;
+        }
+
+        /* puzzle (صفحه سوم) */
+        .puzzle-image-wrapper {
+            margin: 18px 0;
+            border: 2px solid #3c2f2f;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .puzzle-image {
+            width: 100%;
+            height: auto;
+            filter: sepia(0.45) contrast(1.15) brightness(0.95);
+        }
+
+        .puzzle-question {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            text-align: right;
+            color: #e6e6e6;
+        }
+
+        .position-box {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 1.05rem;
+            background: #1a0f00;
+            border: 2px solid #3c2f2f;
+            color: #d9d9d9;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.7);
+            font-family: 'Vazir', serif;
+            transition: all .2s;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            direction: ltr;
+        }
+
+        .position-box .arrow {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 6px;
+            color: #bfae95;
+            background: rgba(92, 74, 58, 0.04);
+            border: 1px solid rgba(92, 74, 58, 0.08);
+            transition: transform .25s;
+            order: 1;
+        }
+
+        .position-box .box-text {
+            flex: 1;
+            text-align: center;
+            color: #d9d9d9;
+            order: 2;
+        }
+
+        .position-box:hover {
+            border-color: #5c4a3a;
+            transform: scale(1.01);
+            box-shadow: 0 0 20px rgba(92, 74, 58, 0.12);
+        }
+
+        .position-box.active .arrow {
+            transform: rotate(180deg) scale(1.05);
+            color: #e6d8c6;
+        }
+
+        .selected-items {
+            font-size: 0.95rem;
+            color: #c7bfae;
+            margin-bottom: 14px;
+            text-align: right;
+            min-height: 18px;
+        }
+
+        /* select modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 200000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #2c1810;
+            border: 2px solid #3c2f2f;
+            padding: 24px;
+            width: 720px;
+            max-width: 95%;
+            border-radius: 10px;
+            text-align: right;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+        }
+
+        .modal-text {
+            font-size: 1.03rem;
+            line-height: 1.6;
+            color: #e6e6e6;
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        .select-modal .select-modal-content {
+            width: 420px;
+            max-width: 95%;
+            padding: 18px;
+            text-align: right;
+        }
+
+        .select-checkbox-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .select-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .select-checkbox-item label {
+            font-size: 1.05rem;
+            color: #e6e6e6;
+            cursor: pointer;
+        }
+
+        .puzzle-error {
+            color: #ff6b6b;
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 5px;
+            display: none;
+        }
+
+        @media (max-width:680px) {
+            .modal-content {
+                padding: 18px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .position-box {
+                padding: 10px;
+                font-size: 1rem;
+            }
+
+            .btn.block {
+                padding: 12px 16px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <div class="wrapper">
-    <h1>پازل تصویری</h1>
-    <div class="puzzle" id="puzzle"></div>
-    <button onclick="initPuzzle()">شروع جدید</button>
-    <p id="message"></p>
-  </div>
-  <script src="script.js"></script>
+    <div class="app">
+        <h1>پادزهر سم ریجر</h1>
+
+        <!-- صفحه 1: مقدمه و شروع -->
+        <div class="page active" id="page1">
+            <div class="card">
+                <p class="question-text">
+                    پادزهر سم ریجر داخل کدام شیشه است؟
+                </p>
+
+                <input type="number" class="answer-input" placeholder="رمز را وارد کنید..." autocomplete="off"
+                    id="answerInputPage1">
+
+                <button class="btn block" id="startBtn">ارسال</button>
+            </div>
+        </div>
+
+        <!-- صفحه 2: متن ادامه (همان محتوای مودال اول قبلی) -->
+        <div class="page" id="page2">
+            <div class="card">
+                <p class="modal-text">
+                    شما به سرعت ظرف شماره 32 را پیدا می‌کنید، به اندازه مساوی برای هر یک از همراهانتان درون لیوان
+                    می‌ریزید و همگی همزمان مایع را سر می‌کشید. در حالی که لیوان خود را پایین می‌آورید، متوجه یک یادداشت
+                    کوچک می‌شوید که مطمئناً پشت ظرف پنهان شده بود...
+                    <br><br>
+                    کارآگاه عزیزم،
+                    آفرین! بار دیگر ثابت کردی که شایستگی داری. متأسفانه، این آخرین بار خواهد بود. اگرچه محتویات این ظرف
+                    تو را نخواهد کشت، اما محتویات آن پادزهر نیز نیست. با این حال، تو و همراهانتان باید بسیار احساس
+                    افتخار کنید. همانطور که اشاره کردم، سمی که اکنون در جریان خون شماست، سم مورد علاقه من است. ساخت آن
+                    بسیار دشوار و پرهزینه است، بنابراین فقط در خاص‌ترین شرایط از آن استفاده می‌کنم. از تو برای بازی کردن
+                    در بازی‌هایم و فراهم آوردن زمان کافی برای فرارم سپاسگزارم.
+                    با تو خداحافظی می‌کنم، کارآگاه عزیزم.
+                    با صمیمانه‌ترین و جاودانه‌ترین احترامات،
+                    ریجر
+                    <br><br>
+                    قطره‌ای عرق روی پیشانیتان شکل می‌گیرد. کمیسر فارادسون حالات چهره شما را می‌بیند و نامه را از دستتان
+                    می‌قاپد. شما به دیوار تکیه می‌دهید و روی زمین می‌لغزید. سپس چیزی در اتاق توجه شما را جلب می‌کند: یک
+                    نقاشی روی دیوار مقابل. نظر آلفرد که در یادداشت‌هایتان ثبت کرده بودید به یادتان می‌آید: "او بر الگوها
+                    و کسانی که می‌توانند آنها را خلق کرده و ببینند، وسواس دارد."
+                    اکنون می‌توانید پاکت "هر زمان دستوری دریافت کردید، درب پاکت را باز کنید" را، باز کنید. هنگامی که
+                    آماده ادامه هستید، روی (ادامه) کلیک کنید.
+                </p>
+
+                <button class="btn block" id="continueToPage3">ادامه</button>
+            </div>
+        </div>
+
+        <!-- صفحه 3: پازل (باکس‌ها) -->
+        <div class="page" id="page3">
+            <div class="card">
+                <p class="puzzle-text modal-text">
+                    شما به سمت نقاشی رفته و از نزدیک آن را بررسی می‌کنید. تغییرات بسیار ظریف است، اما متوجه می‌شوید چند
+                    قطعه در بالای قاب قابل جدا شدن هستند. شما با دقت آنها را بیرون می‌آورید تا از نزدیک بررسی کنید. به
+                    نظر می‌رسد گوشه‌ها بر اثر استفاده مکرر فرسوده شده‌اند و نمادها برای شما چشمگیر هستند. قطعات را
+                    می‌توان در قاب به ترتیب دیگری جایگذاری کرد.
+                    در حالی که گزینه‌هایتان در حال اتمام است، سعی می‌کنید این پازل احتمالی را حل کنید. شاید این پازل به
+                    جایی ختم شود.
+                </p>
+
+                <div class="puzzle-image-wrapper">
+                    <img src="d.jpg" alt="تصویر نقاشی" class="puzzle-image">
+                </div>
+
+                <!-- باکس‌ها A..G -->
+                <div id="positionA">
+                    <p class="puzzle-question">کدام شکل را در موقعیت A قرار می دهید؟</p>
+                    <div class="position-box" data-position="A" id="boxA">
+                        <span class="arrow">▼</span>
+                        <span class="box-text">1</span>
+                    </div>
+                    <div class="selected-items" id="selectedA"></div>
+                </div>
+
+                <div id="positionB">
+                    <p class="puzzle-question">کدام شکل را در موقعیت B قرار می دهید؟</p>
+                    <div class="position-box" data-position="B" id="boxB">
+                        <span class="arrow">▼</span>
+                        <span class="box-text">1</span>
+                    </div>
+                    <div class="selected-items" id="selectedB"></div>
+                </div>
+
+                <div id="positionC">
+                    <p class="puzzle-question">کدام شکل را در موقعیت C قرار می دهید؟</p>
+                    <div class="position-box" data-position="C" id="boxC">
+                        <span class="arrow">▼</span>
+                        <span class="box-text">1</span>
+                    </div>
+                    <div class="selected-items" id="selectedC"></div>
+                </div>
+
+                <div id="positionD">
+                    <p class="puzzle-question">کدام شکل را در موقعیت D قرار می دهید؟</p>
+                    <div class="position-box" data-position="D" id="boxD">
+                        <span class="arrow">▼</span>
+                        <span class="box-text">1</span>
+                    </div>
+                    <div class="selected-items" id="selectedD"></div>
+                </div>
+
+                <div id="positionE">
+                    <p class="puzzle-question">کدام شکل را در موقعیت E قرار می دهید؟</p>
+                    <div class="position-box" data-position="E" id="boxE">
+                        <span class="arrow">▼</span>
+                        <span class="box-text">1</span>
+                    </div>
+                    <div class="selected-items" id="selectedE"></div>
+                </div>
+
+                <div id="positionF">
+                    <p class="puzzle-question">کدام شکل را در موقعیت F قرار می دهید؟</p>
+                    <div class="position-box" data-position="F" id="boxF">
+                        <span class="arrow">▼</span>
+                        <span class="box-text">1</span>
+                    </div>
+                    <div class="selected-items" id="selectedF"></div>
+                </div>
+
+                <div id="positionG">
+                    <p class="puzzle-question">کدام شکل را در موقعیت G قرار می دهید؟</p>
+                    <div class="position-box" data-position="G" id="boxG">
+                        <span class="arrow">▼</span>
+                        <span class="box-text">1</span>
+                    </div>
+                    <div class="selected-items" id="selectedG"></div>
+                </div>
+
+                <div class="puzzle-error" id="puzzleError">پاسخ‌ها اشتباه است. دوباره تلاش کنید.</div>
+
+                <button class="btn block" id="puzzleSubmit"
+                    style="cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;">ارسال
+                    پاسخ‌ها</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال انتخاب شکل (برای تیک زدن اعداد) -->
+    <div class="modal-overlay select-modal" id="selectModal">
+        <div class="modal-content select-modal-content">
+            <h3 id="selectTitle" style="text-align:right; margin-bottom:8px;">انتخاب شکل</h3>
+            <div class="select-checkbox-container" id="selectCheckboxContainer">
+                <!-- checkboxes injected -->
+            </div>
+            <button class="btn block" id="selectConfirm">تایید</button>
+        </div>
+    </div>
+
+    <!-- پاپ‌آپ موفقیت نهایی -->
+    <div class="modal-overlay" id="successPopup">
+        <div class="modal-content">
+            <p class="modal-text">
+                با قرار گرفتن آخرین قطعه در جای خود، صدای کلیک ملایمی می‌شنوید. با فشاری آرام، بخشی از دیوار به داخل
+                می‌لغزد. یک چهره ی تنها که به دیوار انتهای اتاقکی تاریک چسبیده، با حالتی حیرت‌زده در چهره‌اش ایستاده
+                است. او شما را دست کم گرفته بود.
+                <br><br>
+                در یک حرکت سریع، کمیسر فارادسون و مأموران از کنار شما عبور می‌کنند. آن‌ها به سرعت به وسیله ی بقیه
+                یادداشت‌های روزانه او، پادزهر سم را پیدا می‌کنند. امروز دیگر خبری از مرگ نیست و دوران وحشت‌آفرینی ریجر
+                به طور رسمی به پایان رسیده است. مأموران دستبند به دست ریجر زده و او را از اتاق خارج می‌کنند. او با قامتی
+                راست و آرام راه می‌رود. در حین عبور، زمزمه او را از لای دندان‌هایش به آرامی می‌شنوید...
+
+                <strong>"آفرین، کارآگاه."</strong>
+            </p>
+            <button class="btn block" id="closeSuccess">بستن</button>
+        </div>
+    </div>
+
+    <div class="error-message" id="errorMsg"><span><i class="fas fa-exclamation-triangle"></i></span><span
+            style="margin-right:8px;">پاسخ نادرست است</span></div>
+
+    <script>
+        // المان‌ها
+        const page1 = document.getElementById('page1');
+        const page2 = document.getElementById('page2');
+        const page3 = document.getElementById('page3');
+
+        const startBtn = document.getElementById('startBtn');
+        const answerInputPage1 = document.getElementById('answerInputPage1');
+        const continueBtn = document.getElementById('continueToPage3');
+
+        const puzzleSubmit = document.getElementById('puzzleSubmit');
+        const puzzleError = document.getElementById('puzzleError');
+
+        const selectModal = document.getElementById('selectModal');
+        const selectTitle = document.getElementById('selectTitle');
+        const selectCheckboxContainer = document.getElementById('selectCheckboxContainer');
+        const selectConfirm = document.getElementById('selectConfirm');
+
+        const successPopup = document.getElementById('successPopup');
+        const closeSuccess = document.getElementById('closeSuccess');
+
+        const errorMsg = document.getElementById('errorMsg');
+
+        // پاسخ‌ها
+        const CORRECT_ANSWER = "32";
+        const CORRECT_SHAPES = {
+            A: ["4"],
+            B: ["2", "7"],
+            C: ["2", "7"],
+            D: ["5", "1"],
+            E: ["3"],
+            F: ["6"],
+            G: ["5", "1"]
+        };
+
+        // نگهداری انتخاب‌ها
+        let selections = {};
+
+        function showError() {
+            errorMsg.classList.add('show');
+            setTimeout(() => errorMsg.classList.remove('show'), 3000);
+        }
+
+        function showPuzzleError() {
+            puzzleError.style.display = 'block';
+            setTimeout(() => {
+                puzzleError.style.display = 'none';
+            }, 5000);
+        }
+
+        // ناوبری صفحات
+        startBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // جلوگیری از رفتار پیش‌فرض
+            const val = answerInputPage1.value.trim();
+            if (val === CORRECT_ANSWER) {
+                // به صفحه دوم برو
+                page1.classList.remove('active');
+                page2.classList.add('active');
+                answerInputPage1.value = '';
+            } else {
+                showError();
+                answerInputPage1.value = '';
+            }
+        });
+
+        // اجازه enter
+        answerInputPage1.addEventListener('keypress', e => {
+            if (e.key === 'Enter') startBtn.click();
+        });
+
+        continueBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            page2.classList.remove('active');
+            page3.classList.add('active');
+            // scroll to top of puzzle page (if needed)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // باز کردن مودال انتخاب برای یک موقعیت
+        function openSelectModal(position) {
+            // highlight active box
+            document.querySelectorAll('.position-box').forEach(b => b.classList.remove('active'));
+            const boxEl = document.getElementById(`box${position}`);
+            if (boxEl) boxEl.classList.add('active');
+
+            selectTitle.textContent = `انتخاب شکل برای موقعیت ${position}`;
+            selectCheckboxContainer.innerHTML = '';
+
+            // ایجاد checkboxها
+            for (let i = 1; i <= 7; i++) {
+                const id = `temp_${position}_${i}`;
+                const div = document.createElement('div');
+                div.className = 'select-checkbox-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="${id}" value="${i}">
+                    <label for="${id}">${i}</label>
+                `;
+                selectCheckboxContainer.appendChild(div);
+
+                if (selections[position] && selections[position].includes(i.toString())) {
+                    div.querySelector('input').checked = true;
+                }
+            }
+
+            selectModal.classList.add('active');
+            selectModal.dataset.currentPosition = position;
+        }
+
+        // کلیک روی باکس‌ها
+        ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(pos => {
+            const box = document.getElementById(`box${pos}`);
+            if (box) box.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openSelectModal(pos);
+            });
+        });
+
+        // تایید انتخاب‌ها
+        selectConfirm.addEventListener('click', (e) => {
+            e.preventDefault();
+            const position = selectModal.dataset.currentPosition;
+            const checkboxes = selectCheckboxContainer.querySelectorAll('input[type="checkbox"]');
+            const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value).sort((a, b) => Number(a) - Number(b));
+            selections[position] = selected;
+
+            // update UI
+            const box = document.getElementById(`box${position}`);
+            const boxText = box.querySelector('.box-text');
+            const selectedDiv = document.getElementById(`selected${position}`);
+            if (selected.length > 0) {
+                selectedDiv.textContent = `انتخاب شده: ${selected.join(', ')}`;
+                boxText.textContent = selected.join(', ');
+            } else {
+                selectedDiv.textContent = '';
+                boxText.textContent = '1';
+            }
+
+            box.classList.remove('active');
+            selectModal.classList.remove('active');
+        });
+
+        // بستن مودال انتخاب با کلیک بیرون
+        selectModal.addEventListener('click', e => {
+            if (e.target === selectModal) {
+                document.querySelectorAll('.position-box').forEach(b => b.classList.remove('active'));
+                selectModal.classList.remove('active');
+            }
+        });
+
+        // ارسال پازل — بررسی پاسخ‌ها و نمایش پاپ‌آپ موفقیت یا پیام خطا
+        puzzleSubmit.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            let allCorrect = true;
+            console.log('انتخاب‌های شما:', selections); // دیباگ: برای بررسی در کنسول مرورگر
+
+            ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(pos => {
+                const selected = (selections[pos] || []).slice().sort((a, b) => Number(a) - Number(b));
+                const correct = CORRECT_SHAPES[pos].slice().sort((a, b) => Number(a) - Number(b));
+                console.log(`موقعیت ${pos}: انتخاب شما [${selected}], درست [${correct}]`); // دیباگ بیشتر
+
+                if (JSON.stringify(selected) !== JSON.stringify(correct)) {
+                    allCorrect = false;
+                    console.log(`اشتباه در موقعیت ${pos}`); // دیباگ
+                }
+            });
+
+            if (allCorrect) {
+                console.log('همه درست! پاپ‌آپ باز می‌شود.'); // دیباگ
+                // نمایش پاپ‌آپ موفقیت
+                successPopup.classList.add('active');
+            } else {
+                console.log('پاسخ نادرست!'); // دیباگ
+                showPuzzleError();
+            }
+        });
+
+        // بستن پاپ‌آپ موفقیت و ریست
+        closeSuccess.addEventListener('click', (e) => {
+            e.preventDefault();
+            successPopup.classList.remove('active');
+            // ری‌ست وضعیت برای شروع مجدد
+            selections = {};
+            ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(pos => {
+                const box = document.getElementById(`box${pos}`);
+                const selectedDiv = document.getElementById(`selected${pos}`);
+                if (box) box.querySelector('.box-text').textContent = '1';
+                if (selectedDiv) selectedDiv.textContent = '';
+            });
+            // برگرد به صفحه اول (در صورت تمایل) — این خط اختیاری است. در حال حاضر فقط مودال بسته می‌شود.
+            // page3.classList.remove('active'); page1.classList.add('active');
+        });
+
+        // بستن مودال‌ها با کلیک بیرون
+        [successPopup].forEach(modal => {
+            modal.addEventListener('click', e => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+        });
+
+        // تنظیم اولیه متن باکس‌ها (عدد 1)
+        document.addEventListener('DOMContentLoaded', () => {
+            ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(pos => {
+                const box = document.getElementById(`box${pos}`);
+                if (box) {
+                    const bt = box.querySelector('.box-text');
+                    if (bt) bt.textContent = '1';
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>
