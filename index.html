@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +12,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Vazir', 'Georgia', serif;
             background: linear-gradient(135deg, #000000 0%, #2c1810 50%, #3c2f2f 100%);
@@ -25,13 +23,11 @@
             color: #d9d9d9;
             overflow-x: hidden;
         }
-
         .app {
             width: 100%;
             max-width: 920px;
             position: relative;
         }
-
         h1 {
             font-size: clamp(2rem, 4vw, 3rem);
             color: #d2c6b8;
@@ -39,16 +35,13 @@
             margin-bottom: 20px;
             letter-spacing: 6px;
         }
-
         /* صفحات (صفحه‌ها با class page) */
         .page {
             display: none;
         }
-
         .page.active {
             display: block;
         }
-
         .card {
             background: #2c1810;
             border: 2px solid #3c2f2f;
@@ -56,7 +49,6 @@
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
-
         .question-text {
             font-size: 1.05rem;
             margin-bottom: 18px;
@@ -64,7 +56,6 @@
             text-align: right;
             color: #e6e6e6;
         }
-
         .answer-input {
             width: 100%;
             padding: 14px 16px;
@@ -77,7 +68,6 @@
             margin-bottom: 14px;
             text-align: center;
         }
-
         .btn {
             display: inline-block;
             padding: 12px 18px;
@@ -91,20 +81,34 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             position: relative;
-            /* برای اطمینان از clickable area */
-            z-index: 1;
-            /* جلوگیری از تداخل */
+            z-index: 2; /* ← اضافه شد */
+            user-select: none;
+            text-align: center;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            line-height: 1.4;
+            pointer-events: auto; /* ← اضافه شد */
         }
-
         .btn.block {
             display: block;
             width: 90%;
             max-width: 320px;
             margin: 0 auto;
-            padding: 15px 20px;
-            /* افزایش padding برای clickable area بزرگ‌تر */
+            padding: 20px 30px;
+            min-height: 50px;
+            font-size: 1.1rem;
+            line-height: 1.2;
+            vertical-align: middle;
         }
-
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #2c1810;
+        }
         .btn::before {
             content: '';
             position: absolute;
@@ -114,27 +118,18 @@
             bottom: -2px;
             background: transparent;
             border-radius: 10px;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        #puzzleSubmit {
-            display: block;
-            width: 90%;
-            max-width: 320px;
-            margin: 0 auto;
-            padding: 15px 20px;
-            cursor: pointer;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            position: relative;
             z-index: 1;
-            text-align: center;
-            /* برای اطمینان از کلیک روی تمام متن و padding */
+            pointer-events: none !important; /* ← اضافه شد */
         }
-
+        #continueToPage3::before,
+        #puzzleSubmit::before {
+            content: none;
+        }
+        #continueToPage3, #puzzleSubmit {
+            position: relative;
+            z-index: 9999;
+            pointer-events: auto;
+        }
         .error-message {
             position: fixed;
             bottom: 30px;
@@ -149,12 +144,10 @@
             opacity: 0;
             transition: .25s;
         }
-
         .error-message.show {
             opacity: 1;
             bottom: 45px;
         }
-
         /* puzzle (صفحه سوم) */
         .puzzle-image-wrapper {
             margin: 18px 0;
@@ -163,20 +156,17 @@
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
-
         .puzzle-image {
             width: 100%;
             height: auto;
             filter: sepia(0.45) contrast(1.15) brightness(0.95);
         }
-
         .puzzle-question {
             font-size: 1rem;
             margin-bottom: 8px;
             text-align: right;
             color: #e6e6e6;
         }
-
         .position-box {
             width: 100%;
             padding: 12px 14px;
@@ -195,8 +185,9 @@
             justify-content: space-between;
             gap: 10px;
             direction: ltr;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
-
         .position-box .arrow {
             display: inline-block;
             width: 30px;
@@ -210,25 +201,21 @@
             transition: transform .25s;
             order: 1;
         }
-
         .position-box .box-text {
             flex: 1;
             text-align: center;
             color: #d9d9d9;
             order: 2;
         }
-
         .position-box:hover {
             border-color: #5c4a3a;
             transform: scale(1.01);
             box-shadow: 0 0 20px rgba(92, 74, 58, 0.12);
         }
-
         .position-box.active .arrow {
             transform: rotate(180deg) scale(1.05);
             color: #e6d8c6;
         }
-
         .selected-items {
             font-size: 0.95rem;
             color: #c7bfae;
@@ -236,7 +223,6 @@
             text-align: right;
             min-height: 18px;
         }
-
         /* select modal */
         .modal-overlay {
             display: none;
@@ -251,11 +237,9 @@
             align-items: center;
             padding: 20px;
         }
-
         .modal-overlay.active {
             display: flex;
         }
-
         .modal-content {
             background: #2c1810;
             border: 2px solid #3c2f2f;
@@ -266,7 +250,6 @@
             text-align: right;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
         }
-
         .modal-text {
             font-size: 1.03rem;
             line-height: 1.6;
@@ -274,35 +257,46 @@
             margin-bottom: 12px;
             text-align: justify;
         }
-
         .select-modal .select-modal-content {
             width: 420px;
             max-width: 95%;
             padding: 18px;
             text-align: right;
         }
-
-        .select-checkbox-container {
+        .select-radio-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
             margin-top: 10px;
             margin-bottom: 10px;
         }
-
-        .select-checkbox-item {
+        .select-radio-item {
             display: flex;
             align-items: center;
             gap: 8px;
             justify-content: flex-end;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
-
-        .select-checkbox-item label {
+        .select-radio-item:hover {
+            background: rgba(92, 74, 58, 0.1);
+        }
+        .select-radio-item label {
             font-size: 1.05rem;
             color: #e6e6e6;
             cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
         }
-
+        .select-radio-item input[type="radio"] {
+            cursor: pointer;
+            transform: scale(1.2);
+            touch-action: manipulation;
+        }
         .puzzle-error {
             color: #ff6b6b;
             text-align: center;
@@ -314,46 +308,51 @@
             border-radius: 5px;
             display: none;
         }
-
         @media (max-width:680px) {
             .modal-content {
                 padding: 18px;
             }
-
             h1 {
                 font-size: 1.6rem;
             }
-
             .position-box {
                 padding: 10px;
                 font-size: 1rem;
             }
-
             .btn.block {
-                padding: 12px 16px;
+                padding: 24px 32px;
+                min-height: 60px;
+                font-size: 1.2rem;
+            }
+            #continueToPage3,
+            #puzzleSubmit {
+                padding: 30px 40px;
+                min-height: 80px;
+                font-size: 1.3rem;
+            }
+            .select-radio-item {
+                padding: 12px;
+            }
+            .select-radio-item input[type="radio"] {
+                transform: scale(1.4);
             }
         }
     </style>
 </head>
-
 <body>
     <div class="app">
         <h1>پادزهر سم ریجر</h1>
-
         <!-- صفحه 1: مقدمه و شروع -->
         <div class="page active" id="page1">
             <div class="card">
                 <p class="question-text">
                     پادزهر سم ریجر داخل کدام شیشه است؟
                 </p>
-
                 <input type="number" class="answer-input" placeholder="رمز را وارد کنید..." autocomplete="off"
                     id="answerInputPage1">
-
                 <button class="btn block" id="startBtn">ارسال</button>
             </div>
         </div>
-
         <!-- صفحه 2: متن ادامه (همان محتوای مودال اول قبلی) -->
         <div class="page" id="page2">
             <div class="card">
@@ -379,11 +378,9 @@
                     اکنون می‌توانید پاکت "هر زمان دستوری دریافت کردید، درب پاکت را باز کنید" را، باز کنید. هنگامی که
                     آماده ادامه هستید، روی (ادامه) کلیک کنید.
                 </p>
-
                 <button class="btn block" id="continueToPage3">ادامه</button>
             </div>
         </div>
-
         <!-- صفحه 3: پازل (باکس‌ها) -->
         <div class="page" id="page3">
             <div class="card">
@@ -395,11 +392,9 @@
                     در حالی که گزینه‌هایتان در حال اتمام است، سعی می‌کنید این پازل احتمالی را حل کنید. شاید این پازل به
                     جایی ختم شود.
                 </p>
-
                 <div class="puzzle-image-wrapper">
                     <img src="d.jpg" alt="تصویر نقاشی" class="puzzle-image">
                 </div>
-
                 <!-- باکس‌ها A..G -->
                 <div id="positionA">
                     <p class="puzzle-question">کدام شکل را در موقعیت A قرار می دهید؟</p>
@@ -409,7 +404,6 @@
                     </div>
                     <div class="selected-items" id="selectedA"></div>
                 </div>
-
                 <div id="positionB">
                     <p class="puzzle-question">کدام شکل را در موقعیت B قرار می دهید؟</p>
                     <div class="position-box" data-position="B" id="boxB">
@@ -418,7 +412,6 @@
                     </div>
                     <div class="selected-items" id="selectedB"></div>
                 </div>
-
                 <div id="positionC">
                     <p class="puzzle-question">کدام شکل را در موقعیت C قرار می دهید؟</p>
                     <div class="position-box" data-position="C" id="boxC">
@@ -427,7 +420,6 @@
                     </div>
                     <div class="selected-items" id="selectedC"></div>
                 </div>
-
                 <div id="positionD">
                     <p class="puzzle-question">کدام شکل را در موقعیت D قرار می دهید؟</p>
                     <div class="position-box" data-position="D" id="boxD">
@@ -436,7 +428,6 @@
                     </div>
                     <div class="selected-items" id="selectedD"></div>
                 </div>
-
                 <div id="positionE">
                     <p class="puzzle-question">کدام شکل را در موقعیت E قرار می دهید؟</p>
                     <div class="position-box" data-position="E" id="boxE">
@@ -445,7 +436,6 @@
                     </div>
                     <div class="selected-items" id="selectedE"></div>
                 </div>
-
                 <div id="positionF">
                     <p class="puzzle-question">کدام شکل را در موقعیت F قرار می دهید؟</p>
                     <div class="position-box" data-position="F" id="boxF">
@@ -454,7 +444,6 @@
                     </div>
                     <div class="selected-items" id="selectedF"></div>
                 </div>
-
                 <div id="positionG">
                     <p class="puzzle-question">کدام شکل را در موقعیت G قرار می دهید؟</p>
                     <div class="position-box" data-position="G" id="boxG">
@@ -463,72 +452,58 @@
                     </div>
                     <div class="selected-items" id="selectedG"></div>
                 </div>
-
                 <div class="puzzle-error" id="puzzleError">پاسخ‌ها اشتباه است. دوباره تلاش کنید.</div>
-
-                <button class="btn block" id="puzzleSubmit"
-                    style="cursor: pointer; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;">ارسال
+                <button class="btn block" id="puzzleSubmit">ارسال
                     پاسخ‌ها</button>
             </div>
         </div>
     </div>
-
-    <!-- مودال انتخاب شکل (برای تیک زدن اعداد) -->
+    <!-- مودال انتخاب شکل (برای انتخاب تک گزینه با radio) -->
     <div class="modal-overlay select-modal" id="selectModal">
         <div class="modal-content select-modal-content">
             <h3 id="selectTitle" style="text-align:right; margin-bottom:8px;">انتخاب شکل</h3>
-            <div class="select-checkbox-container" id="selectCheckboxContainer">
-                <!-- checkboxes injected -->
+            <div class="select-radio-container" id="selectRadioContainer">
+                <!-- radios injected -->
             </div>
             <button class="btn block" id="selectConfirm">تایید</button>
         </div>
     </div>
-
     <!-- پاپ‌آپ موفقیت نهایی -->
     <div class="modal-overlay" id="successPopup">
         <div class="modal-content">
             <p class="modal-text">
-                با قرار گرفتن آخرین قطعه در جای خود،صدای کلیک ملایمی می‌شنوید. با فشاری آرام،بخشی از دیوار به داخل
-                می‌لغزد.یک چهره ی تنها که به دیوار انتهای اتاقکی تاریک چسبیده،با حالتی حیرت‌زده در چهره‌اش ایستاده
-                است.او شما را دست کم گرفته بود.
+                با قرار گرفتن آخرین قطعه در جای خود، صدای کلیک ملایمی می‌شنوید. با فشاری آرام، بخشی از دیوار به داخل
+                می‌لغزد. یک چهره ی تنها که به دیوار انتهای اتاقکی تاریک چسبیده، با حالتی حیرت‌زده در چهره‌اش ایستاده
+                است. او شما را دست کم گرفته بود.
                 <br><br>
-                در یک حرکت سریع،کمیسر فارادسون و مأموران از کنار شما عبور می‌کنند.آن‌ها به سرعت به وسیله ی بقیه
-                یادداشت‌های روزانه او،پادزهر سم را پیدا می‌کنند.امروز دیگر خبری از مرگ نیست و دوران وحشت‌آفرینی ریجر
-                به طور رسمی به پایان رسیده است.مأموران دستبند به دست ریجر زده و او را از اتاق خارج می‌کنند.او با قامتی
-                راست و آرام راه می‌رود.در حین عبور،زمزمه او را از لای دندان‌هایش به آرامی می‌شنوید...
-
+                در یک حرکت سریع، کمیسر فارادسون و مأموران از کنار شما عبور می‌کنند. آن‌ها به سرعت به وسیله ی بقیه
+                یادداشت‌های روزانه او، پادزهر سم را پیدا می‌کنند. امروز دیگر خبری از مرگ نیست و دوران وحشت‌آفرینی ریجر
+                به طور رسمی به پایان رسیده است. مأموران دستبند به دست ریجر زده و او را از اتاق خارج می‌کنند. او با قامتی
+                راست و آرام راه می‌رود. در حین عبور، زمزمه او را از لای دندان‌هایش به آرامی می‌شنوید...
                 <strong>"آفرین، کارآگاه."</strong>
             </p>
             <button class="btn block" id="closeSuccess">بستن</button>
         </div>
     </div>
-
     <div class="error-message" id="errorMsg"><span><i class="fas fa-exclamation-triangle"></i></span><span
             style="margin-right:8px;">پاسخ نادرست است</span></div>
-
     <script>
         // المان‌ها
         const page1 = document.getElementById('page1');
         const page2 = document.getElementById('page2');
         const page3 = document.getElementById('page3');
-
         const startBtn = document.getElementById('startBtn');
         const answerInputPage1 = document.getElementById('answerInputPage1');
         const continueBtn = document.getElementById('continueToPage3');
-
         const puzzleSubmit = document.getElementById('puzzleSubmit');
         const puzzleError = document.getElementById('puzzleError');
-
         const selectModal = document.getElementById('selectModal');
         const selectTitle = document.getElementById('selectTitle');
-        const selectCheckboxContainer = document.getElementById('selectCheckboxContainer');
+        const selectRadioContainer = document.getElementById('selectRadioContainer');
         const selectConfirm = document.getElementById('selectConfirm');
-
         const successPopup = document.getElementById('successPopup');
         const closeSuccess = document.getElementById('closeSuccess');
-
         const errorMsg = document.getElementById('errorMsg');
-
         // پاسخ‌ها
         const CORRECT_ANSWER = "32";
         const CORRECT_SHAPES = {
@@ -540,28 +515,24 @@
             F: ["6"],
             G: ["5", "1"]
         };
-
-        // نگهداری انتخاب‌ها
+        // نگهداری انتخاب‌ها (تک گزینه‌ای)
         let selections = {};
-
         function showError() {
             errorMsg.classList.add('show');
             setTimeout(() => errorMsg.classList.remove('show'), 3000);
         }
-
         function showPuzzleError() {
             puzzleError.style.display = 'block';
             setTimeout(() => {
                 puzzleError.style.display = 'none';
             }, 5000);
         }
-
-        // ناوبری صفحات
+        // ناوبری صفحات - فقط click
         startBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // جلوگیری از رفتار پیش‌فرض
+            e.preventDefault();
+            e.stopPropagation();
             const val = answerInputPage1.value.trim();
             if (val === CORRECT_ANSWER) {
-                // به صفحه دوم برو
                 page1.classList.remove('active');
                 page2.classList.add('active');
                 answerInputPage1.value = '';
@@ -570,84 +541,76 @@
                 answerInputPage1.value = '';
             }
         });
-
         // اجازه enter
         answerInputPage1.addEventListener('keypress', e => {
             if (e.key === 'Enter') startBtn.click();
         });
-
         continueBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             page2.classList.remove('active');
             page3.classList.add('active');
-            // scroll to top of puzzle page (if needed)
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-
         // باز کردن مودال انتخاب برای یک موقعیت
         function openSelectModal(position) {
-            // highlight active box
             document.querySelectorAll('.position-box').forEach(b => b.classList.remove('active'));
             const boxEl = document.getElementById(`box${position}`);
             if (boxEl) boxEl.classList.add('active');
-
             selectTitle.textContent = `انتخاب شکل برای موقعیت ${position}`;
-            selectCheckboxContainer.innerHTML = '';
-
-            // ایجاد checkboxها
+            selectRadioContainer.innerHTML = '';
             for (let i = 1; i <= 7; i++) {
-                const id = `temp_${position}_${i}`;
+                const name = `radio_${position}`;
+                const id = `${name}_${i}`;
                 const div = document.createElement('div');
-                div.className = 'select-checkbox-item';
+                div.className = 'select-radio-item';
                 div.innerHTML = `
-                    <input type="checkbox" id="${id}" value="${i}">
+                    <input type="radio" id="${id}" name="${name}" value="${i}">
                     <label for="${id}">${i}</label>
                 `;
-                selectCheckboxContainer.appendChild(div);
-
-                if (selections[position] && selections[position].includes(i.toString())) {
+                selectRadioContainer.appendChild(div);
+                if (selections[position] === i.toString()) {
                     div.querySelector('input').checked = true;
                 }
             }
-
             selectModal.classList.add('active');
             selectModal.dataset.currentPosition = position;
         }
-
-        // کلیک روی باکس‌ها
+        // کلیک روی باکس‌ها - فقط click
         ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(pos => {
             const box = document.getElementById(`box${pos}`);
-            if (box) box.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openSelectModal(pos);
-            });
+            if (box) {
+                box.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openSelectModal(pos);
+                });
+            }
         });
-
-        // تایید انتخاب‌ها
+        // تایید انتخاب‌ها - فقط click
         selectConfirm.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             const position = selectModal.dataset.currentPosition;
-            const checkboxes = selectCheckboxContainer.querySelectorAll('input[type="checkbox"]');
-            const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value).sort((a, b) => Number(a) - Number(b));
-            selections[position] = selected;
-
-            // update UI
+            if (!position) return;
+            const radios = selectRadioContainer.querySelectorAll('input[type="radio"]');
+            const selectedRadio = Array.from(radios).find(r => r.checked);
             const box = document.getElementById(`box${position}`);
-            const boxText = box.querySelector('.box-text');
+            const boxText = box ? box.querySelector('.box-text') : null;
             const selectedDiv = document.getElementById(`selected${position}`);
-            if (selected.length > 0) {
-                selectedDiv.textContent = `انتخاب شده: ${selected.join(', ')}`;
-                boxText.textContent = selected.join(', ');
+            if (selectedRadio) {
+                const selected = selectedRadio.value;
+                selections[position] = selected;
+                if (boxText) boxText.textContent = selected;
+                if (selectedDiv) selectedDiv.textContent = `انتخاب شده: ${selected}`;
             } else {
-                selectedDiv.textContent = '';
-                boxText.textContent = '1';
+                delete selections[position];
+                if (boxText) boxText.textContent = '1';
+                if (selectedDiv) selectedDiv.textContent = '';
             }
-
-            box.classList.remove('active');
+            if (box) box.classList.remove('active');
             selectModal.classList.remove('active');
         });
-
         // بستن مودال انتخاب با کلیک بیرون
         selectModal.addEventListener('click', e => {
             if (e.target === selectModal) {
@@ -655,40 +618,34 @@
                 selectModal.classList.remove('active');
             }
         });
-
-        // ارسال پازل — بررسی پاسخ‌ها و نمایش پاپ‌آپ موفقیت یا پیام خطا
+        // ارسال پازل - فقط click
         puzzleSubmit.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             let allCorrect = true;
-            console.log('انتخاب‌های شما:', selections); // دیباگ: برای بررسی در کنسول مرورگر
-
+            console.log('انتخاب‌های شما:', selections);
             ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(pos => {
-                const selected = (selections[pos] || []).slice().sort((a, b) => Number(a) - Number(b));
-                const correct = CORRECT_SHAPES[pos].slice().sort((a, b) => Number(a) - Number(b));
-                console.log(`موقعیت ${pos}: انتخاب شما [${selected}], درست [${correct}]`); // دیباگ بیشتر
-
-                if (JSON.stringify(selected) !== JSON.stringify(correct)) {
+                const selected = selections[pos];
+                const correctOptions = CORRECT_SHAPES[pos];
+                console.log(`موقعیت ${pos}: انتخاب شما [${selected}], گزینه‌های درست [${correctOptions}]`);
+                if (!selected || !correctOptions.includes(selected)) {
                     allCorrect = false;
-                    console.log(`اشتباه در موقعیت ${pos}`); // دیباگ
+                    console.log(`اشتباه در موقعیت ${pos}`);
                 }
             });
-
             if (allCorrect) {
-                console.log('همه درست! پاپ‌آپ باز می‌شود.'); // دیباگ
-                // نمایش پاپ‌آپ موفقیت
+                console.log('همه درست! پاپ‌آپ باز می‌شود.');
                 successPopup.classList.add('active');
             } else {
-                console.log('پاسخ نادرست!'); // دیباگ
+                console.log('پاسخ نادرست!');
                 showPuzzleError();
             }
         });
-
-        // بستن پاپ‌آپ موفقیت و ریست
+        // بستن پاپ‌آپ موفقیت و ریست - فقط click
         closeSuccess.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             successPopup.classList.remove('active');
-            // ری‌ست وضعیت برای شروع مجدد
             selections = {};
             ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(pos => {
                 const box = document.getElementById(`box${pos}`);
@@ -696,17 +653,13 @@
                 if (box) box.querySelector('.box-text').textContent = '1';
                 if (selectedDiv) selectedDiv.textContent = '';
             });
-            // برگرد به صفحه اول (در صورت تمایل) — این خط اختیاری است. در حال حاضر فقط مودال بسته می‌شود.
-            // page3.classList.remove('active'); page1.classList.add('active');
         });
-
         // بستن مودال‌ها با کلیک بیرون
         [successPopup].forEach(modal => {
             modal.addEventListener('click', e => {
                 if (e.target === modal) modal.classList.remove('active');
             });
         });
-
         // تنظیم اولیه متن باکس‌ها (عدد 1)
         document.addEventListener('DOMContentLoaded', () => {
             ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(pos => {
@@ -719,5 +672,4 @@
         });
     </script>
 </body>
-
 </html>
