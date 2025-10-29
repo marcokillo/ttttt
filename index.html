@@ -410,7 +410,7 @@
                     جایی ختم شود.
                 </p>
                 <div class="puzzle-image-wrapper">
-                    <img src="d.jpg" alt="تصویر نقاشی" class="puzzle-image">
+                    <img src="https://via.placeholder.com/800x600/2c1810/d9d9d9?text=Puzzle+Image" alt="تصویر نقاشی" class="puzzle-image">
                 </div>
 
                 <div id="positionA">
@@ -575,6 +575,26 @@
             page2.classList.remove('active');
             page3.classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // تنظیم پیش‌فرض برای موقعیت‌های D و G روی گزینه 1
+            selections.D = "1";
+            selections.G = "1";
+            const boxD = document.getElementById('boxD');
+            const boxG = document.getElementById('boxG');
+            const selectedD = document.getElementById('selectedD');
+            const selectedG = document.getElementById('selectedG');
+            if (boxD && boxD.querySelector('.box-text')) {
+                boxD.querySelector('.box-text').textContent = '1';
+            }
+            if (selectedD) {
+                selectedD.textContent = 'انتخاب شده: 1';
+            }
+            if (boxG && boxG.querySelector('.box-text')) {
+                boxG.querySelector('.box-text').textContent = '1';
+            }
+            if (selectedG) {
+                selectedG.textContent = 'انتخاب شده: 1';
+            }
         });
 
         function openSelectModal(position) {
@@ -606,9 +626,7 @@
         }
 
         ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(pos => {
-            const box = document.
-
-                getElementById(`box${pos}`);
+            const box = document.getElementById(`box${pos}`);
             if (box) {
                 box.addEventListener('click', (e) => {
                     e.preventDefault();
